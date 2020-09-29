@@ -6,17 +6,17 @@ var tasks = require('../data/tasks.json');
 router.use(express.static('data'));
 
 router.post('/', function(req, res, next) {
-  tasks = req.body;
-});
-
-router.get('/', function(req, res, next) {
-  saveTasks(tasks, function(err) {
+  saveTasks(req.body, function(err) {
     if (err) {
       res.status(404).send('Tasks not saved');
       return;
     }
-    res.json(tasks);
+    tasks = req.body;
   });
+});
+
+router.get('/', function(req, res, next) {
+  res.json(tasks);
 });
 
 
