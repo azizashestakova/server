@@ -1,22 +1,36 @@
-var express = require('express');
-var router = express.Router();
-var saveTasks = require('../data/tasks.js');
-var tasks = require('../data/tasks.json');
-
-router.use(express.static('data'));
+const express = require('express');
+const router = express.Router();
+const tasks = require('../data/tasks.js');
+const fs = require('fs')
+const path = './data/tasks.json'
 
 router.post('/', function(req, res, next) {
-  saveTasks(req.body, function(err) {
+  tasks.saveTasks(req.body, function(err) { // перезаписываем массив с задачами
     if (err) {
       res.status(404).send('Tasks not saved');
       return;
     }
-    tasks = req.body;
   });
 });
 
 router.get('/', function(req, res, next) {
-  res.json(tasks);
+  fs.access(path, fs.F_OK, (err) => { // проверяем существует ли путь до файла
+    if (err) { // если нет, то нужно создать
+      fs.open(path, 'w', (err) => { // создаем пустой файл
+        if(err) throw err;
+      });
+      
+      fs.appendFile(path, '[]', function (err) { // добавляем в файл пустой массив
+        if (err) throw err;
+      });
+    }
+    tasks.getTasks(function(error, data) { // получаем задачи
+      if (error) {
+        throw error
+      };
+      res.send(data);
+    });
+  })
 });
 
 

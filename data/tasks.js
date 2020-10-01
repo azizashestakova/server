@@ -1,8 +1,9 @@
 var fs = require('fs');
 
-function saveTasks(tasks, callback) {
-    console.log(tasks);
+module.exports.saveTasks = function(tasks, callback) {
     fs.writeFile('./data/tasks.json', JSON.stringify(tasks, null, '\t'), callback);
 }
 
-module.exports = saveTasks;
+module.exports.getTasks = function(callback) {
+    fs.readFile('./data/tasks.json', 'utf8', callback);
+}
